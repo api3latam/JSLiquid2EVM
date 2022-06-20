@@ -1,15 +1,10 @@
-import os
-from dotenv import load_dotenv
-from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+from bitcoinrpc.authproxy import JSONRPCException
+from auth import get_proxy
 
-def get_credentials():
-    load_dotenv()
-    return os.environ['rpc_user'], os.environ['rpc_password'], os.environ['rpc_port']
 
 if __name__ == "__main__":
-    rpc_user, rpc_password, rpc_port = get_credentials()
     try:
-        rpc_connection = AuthServiceProxy("http://%s:%s@127.0.0.1:%s"%(rpc_user, rpc_password, rpc_port))
+        rpc_connection = get_proxy()
 
         result = rpc_connection.getwalletinfo()
 
