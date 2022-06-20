@@ -1,11 +1,10 @@
 from pathlib import Path
 import logging
-from typing import Union, Optional
 
 REPO_NAME = 'PyLiquid2EVM'
 
 
-def get_root(as_string: Optional[bool] = False) -> Union[str, Path]:
+def get_root() -> str:
     """
     Get the absolute path to the directory
 
@@ -21,6 +20,6 @@ def get_root(as_string: Optional[bool] = False) -> Union[str, Path]:
             break
     try:
         output = '/'.join(_path[:-index + 1])
-        return str(output) if as_string else Path(output)
     except NameError:
         logging.error('The given Repository was not found')
+    return output

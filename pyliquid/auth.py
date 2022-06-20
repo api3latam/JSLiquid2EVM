@@ -1,12 +1,13 @@
-from typing import Union, Optional, NewType
+from pathlib import Path
+from typing import Optional
 import logging
 
 from dotenv import dotenv_values
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 
-from utils import get_root
+from pyliquid.utils import get_root
 
-Config = NewType('Config', dict[str, Union[str, int, float]])
+Config = dict[str, Optional[str]]
 
 
 def get_configs(env_path: Optional[str] = None, keys: Optional[list[str]] = None) -> Config:
@@ -26,7 +27,7 @@ def get_configs(env_path: Optional[str] = None, keys: Optional[list[str]] = None
 
     """
     if not env_path:
-        env_path = (get_root()).joinpath('.env')
+        env_path = str(Path(get_root()).joinpath('.env'))
     envs = dotenv_values(env_path)
     if not keys:
         return envs

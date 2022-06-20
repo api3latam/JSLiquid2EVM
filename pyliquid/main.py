@@ -1,5 +1,5 @@
-from bitcoinrpc.authproxy import JSONRPCException
-from auth import get_proxy
+from bitcoinrpc.authproxy import JSONRPCException  # type: ignore
+from pyliquid.auth import get_proxy
 
 
 if __name__ == "__main__":
