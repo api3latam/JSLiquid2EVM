@@ -1,0 +1,12 @@
+# System
+daemon=1
+
+# Chain
+chain=elementsregtest
+validatepegin=0
+
+# RPC
+rpcuser=<your_user>
+rpcpassword=<your_passwor>
+elementsregtest.rpcport=<port>
+elementsregtest.port=<port>

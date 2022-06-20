@@ -1,2 +1,2 @@
-# JSLiquid2EVM
-Library for interacting on Liquid Network for Asset Collaterization trough Airnode calls
+# PyLiquid2EVM
+Library for Asset Management on Liquid Network.
