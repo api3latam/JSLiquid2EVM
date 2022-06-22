@@ -1,6 +1,10 @@
 from pathlib import Path
 import logging
 
+from typing import Callable
+
+from bitcoinrpc.authproxy import JSONRPCException
+
 REPO_NAME = 'PyLiquid2EVM'
 
 
@@ -23,3 +27,17 @@ def get_root() -> str:
     except NameError:
         logging.error('The given Repository was not found')
     return output
+
+
+def rpc_exec(_func: Callable) -> Callable:
+    """
+    Wrapper for RPC functions calling, simplifying error management.  
+    """
+    def wrap(*args, **kwargs):
+        try:
+            return _func(args, kwargs)
+        except JSONRPCException as json_exception:
+            logging.error(f"A JSON RPC Exception occured: {json_exception}")
+        except Exception as general_exception:
+            logging.exception(f"An Exception occured: {general_exception}")
+    return wrap
