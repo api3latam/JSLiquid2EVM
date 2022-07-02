@@ -44,16 +44,25 @@ def cli_exec(_func: Callable) -> Callable:
     Callable
         Function executable already wrapped.
     """
-    def wrap(cmd: str):
+    def wrap(obj):
         """
         """
         try:
-            cp = _func()
+            cp = _func(obj)
             try:
                 result = json.loads(cp.stdout)
             except json.JSONDecodeError:
                 result = cp.stdout
-            return result
+            if not result:
+                output = True
+            else:
+                output = result
+            return output
         except subprocess.CalledProcessError as stderr:
-            logging.error(stderr)
+            if stderr.output:
+                logging.error(f"Command '{stderr.cmd}' return with error \
+                    (code {stderr.returncode}): {stderr.output}")
+            else:
+                logging.warning(f"Skipping exception code \
+                    ({stderr.returncode}) with no output error...")
     return wrap
