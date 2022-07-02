@@ -111,9 +111,9 @@ class Service():
             Object with stdout that tells us if the daemon started.
         """
         if input_path:
-            cmd = f"elementsd -datadir={input_path}"
+            cmd = f"elementsd -datadir={input_path} -daemon"
         else:
-            cmd = "elementsd"  # Defaults to `DEFAULT_LOCATION` path.
+            cmd = "elementsd -daemon"  # Defaults to `DEFAULT_LOCATION` path.
         return subprocess.run(cmd, capture_output=True, check=True, shell=True)
 
     @classmethod

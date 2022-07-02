@@ -5,11 +5,10 @@ from typing import Optional
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
-from server import Service
-from wrappers import rpc_exec
+from liquid.wrappers import cli_exec, rpc_exec
 
 
-class Wallet(Service):
+class Wallet():
     """
     Object representation for a unique wallet on the node.
 
@@ -69,7 +68,7 @@ class Wallet(Service):
             label = str(uuid4())
         creation = self.proxy.createwallet(label, False, False)
         if address:
-            output = self.proxy.getaddress()
+            output = self.proxy.getnewaddress()
             return output
         else:
             return creation
@@ -94,7 +93,6 @@ class Wallet(Service):
         mnemo = Mnemonic(language)
         return mnemo.generate(strength=strength)
 
-    @rpc_exec
     def list_wallets(self) -> dict:
         """
         Get currently loaded wallets.
@@ -121,6 +119,12 @@ class Wallet(Service):
         """
         pass
 
+    @cli_exec
+    def transfer_assets(self) -> json:
+        """
+        """
+        pass
+
 
 class Pool:
     """
@@ -129,3 +133,20 @@ class Pool:
     Attributes
     ----------
     """
+
+    def __init__(self, input_wallet: Wallet):
+        self._vault_wallet = input_wallet
+
+    @property
+    def vaul_wallet(self):
+        return self._vault_wallet
+
+    def issue_token(self):
+        """
+        """
+        pass
+
+    def burn_token(self):
+        """
+        """
+        pass

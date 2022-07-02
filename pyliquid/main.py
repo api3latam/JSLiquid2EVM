@@ -1,6 +1,11 @@
-from liquid.internals import Wallet, Liquid
+import logging
+from liquid.server import Service
+from liquid.management import Wallet
+
+logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
-    prox = Liquid.get_proxy()
-    w = Wallet(prox, with_address=False)
-    print(w.list_wallets())
+    server = Service()
+    wallet = Wallet(server.get_proxy(), with_address=False)
+    out = wallet.list_wallets()
+    print(out)

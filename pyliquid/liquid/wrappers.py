@@ -20,9 +20,9 @@ def rpc_exec(_func: Callable) -> Callable:
     Callable
         Original function already wrapped.
     """
-    def wrap():
+    def wrap(obj):
         try:
-            return _func()
+            return _func(obj)
         except JSONRPCException as json_exception:
             logging.error(f"A JSON RPC Exception occured: {json_exception}")
         except Exception as general_exception:
