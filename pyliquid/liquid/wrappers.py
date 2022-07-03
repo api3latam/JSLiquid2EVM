@@ -61,8 +61,9 @@ def cli_exec(_func: Callable) -> Callable:
         except subprocess.CalledProcessError as stderr:
             if stderr.output:
                 logging.error(f"Command '{stderr.cmd}' return with error \
-                    (code {stderr.returncode}): {stderr.output}")
+                    (code {stderr.returncode}): {stderr.output}\n")
+                raise RuntimeError
             else:
                 logging.warning(f"Skipping exception code \
-                    ({stderr.returncode}) with no output error...")
+                    ({stderr.returncode}) with no output error...\n")
     return wrap

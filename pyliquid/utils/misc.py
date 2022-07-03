@@ -26,7 +26,7 @@ def get_root() -> str:
     try:
         output = '/'.join(_path[:-index + 1])
     except NameError:
-        logging.error('The given Repository was not found')
+        logging.error('The given Repository was not found\n')
     return output
 
 

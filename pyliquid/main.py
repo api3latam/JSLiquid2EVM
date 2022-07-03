@@ -5,7 +5,7 @@ from liquid.management import Wallet
 logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
-    server = Service()
+    server = Service(new_node=True)
     wallet = Wallet(server.get_proxy(), with_address=False)
     out = wallet.list_wallets()
     print(out)
