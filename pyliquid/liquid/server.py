@@ -36,8 +36,8 @@ class Service():
             If either create a new directory for the blockchain or use
             any already available for the mode set in config file.
         working_dir: Optional[str]
-            If you want to use any other directory than the default one 
-            at `$HOME/.elements`. This should be the same path that contains 
+            If you want to use any other directory than the default one
+            at `$HOME/.elements`. This should be the same path that contains
             the `elements.conf` file.
         """
         if new_node:

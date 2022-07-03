@@ -1,7 +1,6 @@
 
 from uuid import uuid4
-import json
-from typing import Optional
+from typing import Optional, Callable
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
@@ -43,32 +42,63 @@ class Wallet():
     @property
     def proxy(self) -> AuthServiceProxy:
         """
-        Current proxy service on use.
+        Getter method for `proxy` attribute.
         """
         return self._proxy
 
     @property
     def wallet(self) -> dict:
         """
-        Current wallet metadata at the network level.
+        Getter method for `wallet` attribute.
         """
         return self._wallet
+
+    @classmethod
+    @rpc_exec
+    def _wrapper_executor(cls, _inst_func: Callable, *args):
+        """
+        Executor for wrapper functions to work withing instance methods.
+
+        Parameters
+        ---------
+        _inst_func: Callable
+            Instance function to be used.
+        *args:
+            Set of parameters to be passed down to the function.
+
+        Returns
+        -------
+        dict
+            Output of function execution.
+        """
+        if args:
+            # Unpacks and unnest args before passing it down to function.
+            return _inst_func(*args[0])
+        else:
+            return _inst_func()
 
     def _create_wallet(self, label: str, address: bool) -> dict:
         """
         Create a wallet from a random name.
 
+        Parameters
+        ----------
+        label: str
+            Name for the wallet
+        address: bool
+            Either to create or not an address for this wallet.
+
         Returns
         ------
         dict
-            Resulting decoded JSON from method:
-                `{name: str, warning: str}`
+            Resulting metadata from Wallet creation process.
         """
         if not label:
             label = str(uuid4())
-        creation = self.proxy.createwallet(label, False, False)
+        creation = self._wrapper_executor(self.proxy.createwallet, label,
+                                          False, False)
         if address:
-            output = self.proxy.getnewaddress()
+            output = self._wrapper_executor(self.proxy.getnewaddress)
             return output
         else:
             return creation
@@ -81,7 +111,7 @@ class Wallet():
         Parameters
         ----------
         strength: int, default = 256
-            The length for the resulting phrase to be generated. 
+            The length for the resulting phrase to be generated.
         language: str, default = "english"
             The language of the dictionary to be used.
 
@@ -93,34 +123,31 @@ class Wallet():
         mnemo = Mnemonic(language)
         return mnemo.generate(strength=strength)
 
-    def list_wallets(self) -> dict:
+    def list_wallets(self) -> list:
         """
-        Get currently loaded wallets.
+        Get all saved wallets at network directory.
 
         Returns
         -------
         dict
-            Dictionary with a lists of wallets 
+            Dictionary with a lists of wallets.
         """
-        return self.proxy.listwallets()
+        return self._wrapper_executor(self.proxy.listwallets)
 
     @rpc_exec
-    def _load_wallet(self) -> dict:
+    def _load_wallet(self):
         """
-        Load an existing wallet
         """
         pass
 
     @rpc_exec
-    def get_balance(self, address: str) -> json:
+    def get_balance(self):
         """
-        Parameters
-        ---------
         """
         pass
 
     @cli_exec
-    def transfer_assets(self) -> json:
+    def transfer_assets(self):
         """
         """
         pass
@@ -128,17 +155,32 @@ class Wallet():
 
 class Pool:
     """
-    Object representing a unique pool of a token class
+    Object representing a unique pool of a token class.
 
     Attributes
     ----------
+    _vault_wallet: Wallet
+        Wallet owner of this Pool.
     """
 
+    _vault_wallet: Wallet
+
     def __init__(self, input_wallet: Wallet):
+        """
+        Constructor for Pool class.
+
+        Parameters
+        ----------
+        input_wallet: Wallet
+            Wallet to own the Pool and safeguard the tokens.
+        """
         self._vault_wallet = input_wallet
 
     @property
     def vaul_wallet(self):
+        """
+        Getter method for `vault_wallet` attribute.
+        """
         return self._vault_wallet
 
     def issue_token(self):

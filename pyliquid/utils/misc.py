@@ -45,7 +45,7 @@ def get_configs(env_path: Optional[str] = None,
     Returns
     -------
     dict
-        Configuration dictionary with all or indicated definitions from 
+        Configuration dictionary with all or indicated definitions from
         `.env` file.
     """
     if not env_path:
