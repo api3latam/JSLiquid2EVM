@@ -317,12 +317,44 @@ class Pool:
         """
         return self._vault_wallet
 
-    def issue_token(self):
+    def issue_token(self, name: str, quantity: int,
+                        description: str, divisible: bool) -> str:
+            """
+            Issue a token to the pool.
+    
+            Parameters
+            ----------
+            name: str
+                Name of the token.
+            quantity: int
+                Quantity of the token.
+            description: str
+                Description of the token.
+            divisible: bool
+                If the token is divisible.
+    
+            Returns
+            -------
+            str
+                Transaction ID.
+            """
+            return self._vault_wallet.issue_asset(name, quantity, description, divisible)
+    def burn_token(self, name: str, quantity: int) -> str:
         """
-        """
-        pass
+        Burn a token from the pool.
 
-    def burn_token(self):
+        Parameters
+        ----------
+        name: str
+            Name of the token.
+        quantity: int
+            Quantity of the token.
+
+        Returns
+        -------
+        str
+            Transaction ID.
         """
-        """
-        pass
+        return self._vault_wallet.burn_asset(name, quantity)
+
+    
