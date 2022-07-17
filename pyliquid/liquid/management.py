@@ -106,22 +106,159 @@ class Wallet(Service):
         """
         return self.proxy.listwallets()
 
+    #TODO: Test this approach
     @rpc_exec
-    def _load_wallet(self) -> dict:
+    def load_wallet(self, label: str) -> dict:
         """
-        Load an existing wallet
+        Load a wallet with a given label.
+
+        Parameters
+        ----------
+        label: str
+            Label of the wallet to be loaded.
+
+        Returns
+        -------
+        dict
+            Dictionary with a lists of wallets 
         """
-        pass
+        return self.proxy.loadwallet(label)
+        
+
+    #TODO: Test this approach
+    @rpc_exec
+    def get_balance(self) -> dict:
+        """
+        Get the balance of the current wallet.
+
+        Returns
+        -------
+        dict
+            Dictionary with a lists of wallets 
+        """
+        return self.proxy.getbalance()
 
     @rpc_exec
-    def get_balance(self, address: str) -> json:
+    def get_address(self) -> str:
         """
+        Get the current address of the wallet.
+
+        Returns
+        -------
+        str
+            Current address of the wallet.
+        """
+        return self.proxy.getaddress()
+    @rpc_exec
+    def get_private_key(self) -> str:
+        """
+        Get the current private key of the wallet.
+
+        Returns
+        -------
+        str
+            Current private key of the wallet.
+        """
+        return self.proxy.dumpprivkey()
+    @rpc_exec
+    def get_public_key(self) -> str:
+        """
+        Get the current public key of the wallet.
+
+        Returns
+        -------
+        str
+            Current public key of the wallet.
+        """
+        return self.proxy.getpubkey()
+    @rpc_exec
+    def get_wallet_info(self) -> dict:
+        """
+        Get the current wallet information.
+
+        Returns
+        -------
+        dict
+            Current wallet information.
+        """
+        return self.proxy.getwalletinfo()
+    @rpc_exec
+    def send_to_address(self, address: str, amount: float) -> str:
+        """
+        Send a transaction to a given address.
+
         Parameters
         ---------
+        address: str
+            Address to send the transaction to.
+        amount: float
+            Amount to send.
+
+        Returns
+        -------
+        str
+            Transaction ID.
         """
-        pass
+        return self.proxy.sendtoaddress(address, amount)
+    @rpc_exec
+    def send_to_many(self, addresses: dict) -> str:
+        """
+        Send a transaction to multiple addresses.
 
+        Parameters
+        ---------
+        addresses: dict
+            Dictionary with addresses and amounts to send.
 
+        Returns
+        -------
+        str
+            Transaction ID.
+        """
+        return self.proxy.sendmany("", addresses)
+    @rpc_exec
+    def send_from_address(self, address: str, amount: float) -> str:
+        """
+        Send a transaction from a given address.
+
+        Parameters
+        ---------
+        address: str
+            Address to send the transaction from.
+        amount: float
+            Amount to send.
+
+        Returns
+        -------
+        str
+            Transaction ID.
+        """
+        return self.proxy.sendfrom(address, address, amount)
+
+    @rpc_exec
+    def issue_asset(self, name: str, quantity: int,
+                     description: str, divisible: bool) -> str:
+          """
+          Issue an asset to the network.
+    
+          Parameters
+          ---------
+          name: str
+                Name of the asset.
+          quantity: int
+                Quantity of the asset.
+          description: str
+                Description of the asset.
+          divisible: bool
+                If the asset is divisible.
+    
+          Returns
+          -------
+          str
+                Transaction ID.
+          """
+          return self.proxy.issue(name, quantity, description, divisible)
+#Create a object represnting a unique pool of a token class
 class Pool:
     """
     Object representing a unique pool of a token class
