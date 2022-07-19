@@ -1,4 +1,6 @@
-
+"""
+Core components that represent objects inside Liquid node like a Wallet.
+"""
 from uuid import uuid4
 from typing import Optional, Callable
 
