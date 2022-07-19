@@ -26,7 +26,7 @@ def get_root() -> str:
     try:
         output = '/'.join(_path[:-index + 1])
     except NameError:
-        logging.error('The given Repository was not found')
+        logging.error('The given Repository was not found\n')
     return output
 
 
@@ -45,7 +45,7 @@ def get_configs(env_path: Optional[str] = None,
     Returns
     -------
     dict
-        Configuration dictionary with all or indicated definitions from 
+        Configuration dictionary with all or indicated definitions from
         `.env` file.
     """
     if not env_path:

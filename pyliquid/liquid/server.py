@@ -4,7 +4,9 @@ infrastructure of a running Liquid node.
 """
 
 import os
+import sys
 import subprocess
+import time
 from datetime import datetime
 import logging
 from typing import Optional
@@ -34,29 +36,34 @@ class Service():
             If either create a new directory for the blockchain or use
             any already available for the mode set in config file.
         working_dir: Optional[str]
-            If you want to use any other directory than the default one 
-            at `$HOME/.elements`. This should be the same path that contains 
+            If you want to use any other directory than the default one
+            at `$HOME/.elements`. This should be the same path that contains
             the `elements.conf` file.
         """
         if new_node:
-            self._check_location(working_dir)
-            if self._is_running():
-                logging.info("A daemon is already running...\n\
-                    Stopping service...")
-                _ = self._stop_daemon()
-            if working_dir != DEFAULT_LOCATION:
-                _ = self._start_daemon(working_dir)
-            else:
-                _ = self._start_daemon()
-            logging.info("Elements Core up and running!")
+            try:
+                self._check_location(working_dir)
+                if self._is_running():
+                    _ = self._stop_daemon()
+                    logging.info("A daemon is already running...\n\
+                        Stopping service...\n")
+                    time.sleep(1)  # Wait for process to be killed
+                if working_dir != DEFAULT_LOCATION:
+                    _ = self._start_daemon(working_dir)
+                else:
+                    _ = self._start_daemon()
+                time.sleep(1)  # Wait for daemon to start
+                logging.info("Elements Core up and running!\n")
+            except RuntimeError:
+                sys.exit()
         else:
             if self._is_running():
                 logging.info("Daemon is running and no custom instructions\
-                    were given. Seems good to go!")
+                    were given. Seems good to go!\n")
             else:
                 logging.info("Daemon is not running and `new_node` was set to\
                 'False'. If you don't have a running service you'll be\
-                    restricted on what you can do.")
+                    restricted on what you can do.\n")
 
     def _check_location(self, network_path: str) -> None:
         """
@@ -74,10 +81,10 @@ class Service():
                 mode = [v for v in confs.readlines() if v.startswith('chain=')]
             logging.info(f"Initializating Chain in mode: \
                 {mode[0].split('=')[-1]}\nLocated at directory: \
-                    {network_path}/{mode[0]}")
+                    {network_path}/{mode[0]}\n")
         except FileNotFoundError:
             logging.error("Verify that there's a `.conf` file at the specified\
-                            path")
+                            path\n")
 
     @classmethod
     @cli_exec
@@ -113,7 +120,8 @@ class Service():
         if input_path:
             cmd = f"elementsd -datadir={input_path}"
         else:
-            cmd = "elementsd"  # Defaults to `DEFAULT_LOCATION` path.
+            # Defaults to `DEFAULT_LOCATION` path.
+            cmd = "elementsd"
         return subprocess.run(cmd, capture_output=True, check=True, shell=True)
 
     @classmethod
@@ -155,7 +163,7 @@ class Service():
         if (host != 'localhost') and (auth_dict):
             raise ValueError(
                 'Either provide a custom host or parameters to be used by \
-                `localhost`')
+                `localhost`\n')
         else:
             if not auth_dict:
                 auth_dict = get_configs(
@@ -163,5 +171,5 @@ class Service():
             _cred = f"{auth_dict['rpc_user']}:{auth_dict['rpc_password']}"
             host = f"http://{_cred}@127.0.0.1:{auth_dict['rpc_port']}"
         asp = AuthServiceProxy(host)
-        logging.info(f"[{datetime.now()}] Proxy service created at: {host}")
+        logging.info(f"[{datetime.now()}] Proxy service created at: {host}\n")
         return asp
