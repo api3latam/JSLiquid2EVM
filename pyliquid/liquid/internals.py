@@ -2,12 +2,12 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional, Type
 
-from server import DEFAULT_LOCATION, Service
-from management import Wallet, Pool
-from ..main import get_active_service, get_session_wallets, \
-    update_active_service, update_sessions_wallets
+from .server import DEFAULT_LOCATION, Service
+from .management import Wallet, Pool
+from ..state import get_active_service, update_active_service, \
+    get_session_wallets
 
-router = APIRouter(prefix="internal", tags=['management'],
+router = APIRouter(prefix="/internal", tags=['management'],
                    responses={403: {"description": "Operation forbidden"},
                               404: {"description": "Not found"}})
 

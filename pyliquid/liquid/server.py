@@ -12,8 +12,8 @@ import logging
 from typing import Optional
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
-from liquid.wrappers import cli_exec
-from utils.misc import Config, get_configs
+from .wrappers import cli_exec
+from pyliquid.utils.misc import Config, get_configs
 
 DEFAULT_LOCATION = f"{os.environ['HOME']}/.elements"
 

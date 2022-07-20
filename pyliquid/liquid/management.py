@@ -6,7 +6,7 @@ from typing import Optional, Callable
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
-from liquid.wrappers import cli_exec, rpc_exec
+from .wrappers import cli_exec, rpc_exec
 
 
 class Wallet():
@@ -136,7 +136,7 @@ class Wallet():
         """
         return self._wrapper_executor(self.proxy.listwallets)
 
-    #TODO: Test this approach
+    # TODO: Test this approach
     @rpc_exec
     def load_wallet(self, label: str) -> dict:
         """
@@ -153,9 +153,8 @@ class Wallet():
             Dictionary with a lists of wallets 
         """
         return self.proxy.loadwallet(label)
-        
 
-    #TODO: Test this approach
+    # TODO: Test this approach
     @rpc_exec
     def get_balance(self) -> dict:
         """
@@ -179,6 +178,7 @@ class Wallet():
             Current address of the wallet.
         """
         return self.proxy.getaddress()
+
     @rpc_exec
     def get_private_key(self) -> str:
         """
@@ -190,6 +190,7 @@ class Wallet():
             Current private key of the wallet.
         """
         return self.proxy.dumpprivkey()
+
     @rpc_exec
     def get_public_key(self) -> str:
         """
@@ -201,6 +202,7 @@ class Wallet():
             Current public key of the wallet.
         """
         return self.proxy.getpubkey()
+
     @rpc_exec
     def get_wallet_info(self) -> dict:
         """
@@ -212,6 +214,7 @@ class Wallet():
             Current wallet information.
         """
         return self.proxy.getwalletinfo()
+
     @rpc_exec
     def send_to_address(self, address: str, amount: float) -> str:
         """
@@ -230,6 +233,7 @@ class Wallet():
             Transaction ID.
         """
         return self.proxy.sendtoaddress(address, amount)
+
     @rpc_exec
     def send_to_many(self, addresses: dict) -> str:
         """
@@ -246,6 +250,7 @@ class Wallet():
             Transaction ID.
         """
         return self.proxy.sendmany("", addresses)
+
     @rpc_exec
     def send_from_address(self, address: str, amount: float) -> str:
         """
@@ -267,28 +272,29 @@ class Wallet():
 
     @rpc_exec
     def issue_asset(self, name: str, quantity: int,
-                     description: str, divisible: bool) -> str:
-          """
-          Issue an asset to the network.
-    
-          Parameters
-          ---------
-          name: str
-                Name of the asset.
-          quantity: int
-                Quantity of the asset.
-          description: str
-                Description of the asset.
-          divisible: bool
-                If the asset is divisible.
-    
-          Returns
-          -------
-          str
-                Transaction ID.
-          """
-          return self.proxy.issue(name, quantity, description, divisible)
-#Create a object represnting a unique pool of a token class
+                    description: str, divisible: bool) -> str:
+        """
+        Issue an asset to the network.
+
+        Parameters
+        ---------
+        name: str
+              Name of the asset.
+        quantity: int
+              Quantity of the asset.
+        description: str
+              Description of the asset.
+        divisible: bool
+              If the asset is divisible.
+
+        Returns
+        -------
+        str
+              Transaction ID.
+        """
+        return self.proxy.issue(name, quantity, description, divisible)
+
+
 class Pool:
     """
     Object representing a unique pool of a token class.
@@ -320,27 +326,29 @@ class Pool:
         return self._vault_wallet
 
     def issue_token(self, name: str, quantity: int,
-                        description: str, divisible: bool) -> str:
-            """
-            Issue a token to the pool.
-    
-            Parameters
-            ----------
-            name: str
-                Name of the token.
-            quantity: int
-                Quantity of the token.
-            description: str
-                Description of the token.
-            divisible: bool
-                If the token is divisible.
-    
-            Returns
-            -------
-            str
-                Transaction ID.
-            """
-            return self._vault_wallet.issue_asset(name, quantity, description, divisible)
+                    description: str, divisible: bool) -> str:
+        """
+        Issue a token to the pool.
+
+        Parameters
+        ----------
+        name: str
+            Name of the token.
+        quantity: int
+            Quantity of the token.
+        description: str
+            Description of the token.
+        divisible: bool
+            If the token is divisible.
+
+        Returns
+        -------
+        str
+            Transaction ID.
+        """
+        return self._vault_wallet.issue_asset(name, quantity, description, 
+                                              divisible)
+
     def burn_token(self, name: str, quantity: int) -> str:
         """
         Burn a token from the pool.
@@ -358,5 +366,3 @@ class Pool:
             Transaction ID.
         """
         return self._vault_wallet.burn_asset(name, quantity)
-
-    
