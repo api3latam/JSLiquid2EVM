@@ -13,7 +13,7 @@ from typing import Optional
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from .wrappers import cli_exec
-from pyliquid.utils.misc import Config, get_configs
+from .utils.misc import Config, get_configs
 
 DEFAULT_LOCATION = f"{os.environ['HOME']}/.elements"
 

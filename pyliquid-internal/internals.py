@@ -1,20 +1,7 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
 from typing import Optional, Type
 
 from .server import DEFAULT_LOCATION, Service
 from .management import Wallet, Pool
-from ..state import get_active_service, update_active_service, \
-    get_session_wallets
-
-router = APIRouter(prefix="/internal", tags=['management'],
-                   responses={403: {"description": "Operation forbidden"},
-                              404: {"description": "Not found"}})
-
-
-class ServiceParams(BaseModel):
-    new_node: Optional[bool] = True
-    working_dir: Optional[str] = DEFAULT_LOCATION
 
 
 def _check_for_proxy():
@@ -36,7 +23,6 @@ def _check_for_proxy():
         _check_for_proxy()
 
 
-@router.get('/wallet', tags=['wallet'])
 async def get_wallet():
     """
     List active wallets on the node.
@@ -50,7 +36,6 @@ async def get_wallet():
     _wallet.list_wallets()
 
 
-@router.get('/wallet/{requested_label}', tags=['wallet'])
 async def get_labeled_wallet(requested_label: str):
     """
     Returns an specific wallet metadata.
@@ -69,7 +54,6 @@ async def get_labeled_wallet(requested_label: str):
             raise TypeError('The requested address has not been loaded.')
 
 
-@router.post('/wallet/create', tags=['wallet'])
 async def post_create_wallet():
     """
     Creates a new Wallet instance
@@ -78,7 +62,6 @@ async def post_create_wallet():
     return out
 
 
-@router.get('/node/status', tags=['node'])
 async def get_node_status():
     """
     Get the status of `elementsd` daemon.
@@ -86,7 +69,6 @@ async def get_node_status():
     return Service._is_running()
 
 
-@router.post('/node/start', tags=['node'])
 def start_node(body: ServiceParams):
     """
     Start a running instance of Liquid network.
