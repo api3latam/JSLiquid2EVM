@@ -4,7 +4,7 @@ from .server import DEFAULT_LOCATION, Service
 from .management import Wallet, Pool
 
 
-def _check_for_proxy():
+async def check_for_proxy():
     """
     Check if there's any Service instance running to get its proxy.
 
@@ -69,9 +69,9 @@ async def get_node_status():
     return Service._is_running()
 
 
-def start_node(body: ServiceParams):
+def start_node():
     """
     Start a running instance of Liquid network.
     """
-    _ = Service(**body)
+    _ = Service()
     return 'Service sucessfully created'
