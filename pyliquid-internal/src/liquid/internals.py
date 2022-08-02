@@ -1,7 +1,9 @@
-from typing import Optional, Type
+"""
+Set of functions for callbacks to interact with Liquid functionalities.
+"""
 
-from .server import DEFAULT_LOCATION, Service
-from .management import Wallet, Pool
+from .server import Service
+from .management import Wallet
 
 
 async def check_for_proxy():

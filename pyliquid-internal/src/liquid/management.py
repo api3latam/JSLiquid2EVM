@@ -6,7 +6,7 @@ from typing import Optional, Callable
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
-from .wrappers import cli_exec, rpc_exec
+from .wrappers import rpc_exec
 
 
 class Wallet():
@@ -150,7 +150,7 @@ class Wallet():
         Returns
         -------
         dict
-            Dictionary with a lists of wallets 
+            Dictionary with a lists of wallets
         """
         return self.proxy.loadwallet(label)
 
@@ -163,7 +163,7 @@ class Wallet():
         Returns
         -------
         dict
-            Dictionary with a lists of wallets 
+            Dictionary with a lists of wallets
         """
         return self.proxy.getbalance()
 
@@ -346,7 +346,7 @@ class Pool:
         str
             Transaction ID.
         """
-        return self._vault_wallet.issue_asset(name, quantity, description, 
+        return self._vault_wallet.issue_asset(name, quantity, description,
                                               divisible)
 
     def burn_token(self, name: str, quantity: int) -> str:
