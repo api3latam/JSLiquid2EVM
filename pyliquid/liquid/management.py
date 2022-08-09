@@ -269,13 +269,13 @@ class Wallet():
         Parameters
         ---------
         name: str
-              Name of the asset.
+            Name of the asset.
         quantity: int
-              Quantity of the asset.
+            Quantity of the asset.
         description: str
-              Description of the asset.
+            Description of the asset.
         divisible: bool
-              If the asset is divisible.
+            If the asset is divisible.
 
         Returns
         -------
@@ -337,8 +337,9 @@ class Pool:
         str
             Transaction ID.
         """
-        return (self._vault_wallet.issue_asset, name, quantity, description,
-                divisible)
+        return self._vault_wallet._wrapper_executor(
+            self._vault_wallet.proxy.issue_asset, name, quantity, description,
+            divisible)
 
     def burn_token(self, name: str, quantity: int) -> str:
         """
@@ -356,4 +357,5 @@ class Pool:
         str
             Transaction ID.
         """
-        return self._vault_wallet.burn_asset(name, quantity)
+        return self._vault_wallet._wrapper_executor(
+            self._vault_wallet.proxy.burn_asset, name, quantity)

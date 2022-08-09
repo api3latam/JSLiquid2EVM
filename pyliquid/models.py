@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Tuple
 from pydantic import BaseModel, Field, validator
 
-from ..utils.data import check_sorted_index_tuple
+from pyliquid.utils.data import check_sorted_index_tuple
 
 
 def check_matching_list_sequences(list_field: list[tuple], len_field: int) \
