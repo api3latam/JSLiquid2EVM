@@ -1,6 +1,0 @@
-
-all = [
-    "liquid",
-    "mqtt",
-    "utils"
-]

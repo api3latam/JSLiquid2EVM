@@ -1,7 +1,17 @@
+from pathlib import Path
 import logging
 from fastapi import FastAPI
 
-from pyliquid.liquid import internals
+from pyliquid.liquid import internals, server
+from pyliquid.utils import misc
+
+PROJECT_PATH = "PyLiquid2EVM"
+
+_base_path = str(Path(__file__)).split('/')
+_filter_path = ['/'.join(_base_path[:i]) for i in range(1, len(_base_path))
+                if PROJECT_PATH not in _base_path[:i]][-1]
+
+BACKEND_PATH = f"{_filter_path}/{PROJECT_PATH}"
 
 app = FastAPI()
 
@@ -14,6 +24,8 @@ async def startup_event():
     Startup script to be executed when API is initialized.
     """
     logging.basicConfig(level=logging.INFO)
+    misc.set_working_path(BACKEND_PATH)
+    server.Service()
 
 
 @app.get('/')

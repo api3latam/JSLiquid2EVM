@@ -136,8 +136,6 @@ class Wallet():
         """
         return self._wrapper_executor(self.proxy.listwallets)
 
-    # TODO: Test this approach
-    @rpc_exec
     def load_wallet(self, label: str) -> dict:
         """
         Load a wallet with a given label.
@@ -152,10 +150,8 @@ class Wallet():
         dict
             Dictionary with a lists of wallets
         """
-        return self.proxy.loadwallet(label)
+        return self._wrapper_executor(self.proxy.loadwallet, label)
 
-    # TODO: Test this approach
-    @rpc_exec
     def get_balance(self) -> dict:
         """
         Get the balance of the current wallet.
@@ -165,9 +161,8 @@ class Wallet():
         dict
             Dictionary with a lists of wallets
         """
-        return self.proxy.getbalance()
+        return self._wrapper_executor(self.proxy.getbalance)
 
-    @rpc_exec
     def get_address(self) -> str:
         """
         Get the current address of the wallet.
@@ -177,9 +172,8 @@ class Wallet():
         str
             Current address of the wallet.
         """
-        return self.proxy.getaddress()
+        return self._wrapper_executor(self.proxy.getaddress)
 
-    @rpc_exec
     def get_private_key(self) -> str:
         """
         Get the current private key of the wallet.
@@ -189,9 +183,8 @@ class Wallet():
         str
             Current private key of the wallet.
         """
-        return self.proxy.dumpprivkey()
+        return self._wrapper_executor(self.proxy.dumpprivkey)
 
-    @rpc_exec
     def get_public_key(self) -> str:
         """
         Get the current public key of the wallet.
@@ -201,9 +194,8 @@ class Wallet():
         str
             Current public key of the wallet.
         """
-        return self.proxy.getpubkey()
+        return self._wrapper_executor(self.proxy.getpubkey)
 
-    @rpc_exec
     def get_wallet_info(self) -> dict:
         """
         Get the current wallet information.
@@ -213,9 +205,8 @@ class Wallet():
         dict
             Current wallet information.
         """
-        return self.proxy.getwalletinfo()
+        return self._wrapper_executor(self.proxy.getwalletinfo)
 
-    @rpc_exec
     def send_to_address(self, address: str, amount: float) -> str:
         """
         Send a transaction to a given address.
@@ -232,9 +223,9 @@ class Wallet():
         str
             Transaction ID.
         """
-        return self.proxy.sendtoaddress(address, amount)
+        return self._wrapper_executor(self.proxy.sendtoaddress, 
+            address, amount)
 
-    @rpc_exec
     def send_to_many(self, addresses: dict) -> str:
         """
         Send a transaction to multiple addresses.
@@ -249,9 +240,8 @@ class Wallet():
         str
             Transaction ID.
         """
-        return self.proxy.sendmany("", addresses)
+        return self._wrapper_executor(self.proxy.sendmany, "", addresses)
 
-    @rpc_exec
     def send_from_address(self, address: str, amount: float) -> str:
         """
         Send a transaction from a given address.
@@ -268,9 +258,9 @@ class Wallet():
         str
             Transaction ID.
         """
-        return self.proxy.sendfrom(address, address, amount)
+        return self._wrapper_executor(self.proxy.sendfrom, 
+                                      address, address, amount)
 
-    @rpc_exec
     def issue_asset(self, name: str, quantity: int,
                     description: str, divisible: bool) -> str:
         """
@@ -292,7 +282,8 @@ class Wallet():
         str
               Transaction ID.
         """
-        return self.proxy.issue(name, quantity, description, divisible)
+        return self._wrapper_executor(self.proxy.issue, name, 
+                                      quantity, description, divisible)
 
 
 class Pool:
@@ -346,8 +337,8 @@ class Pool:
         str
             Transaction ID.
         """
-        return self._vault_wallet.issue_asset(name, quantity, description,
-                                              divisible)
+        return (self._vault_wallet.issue_asset, name, quantity, description,
+                divisible)
 
     def burn_token(self, name: str, quantity: int) -> str:
         """
