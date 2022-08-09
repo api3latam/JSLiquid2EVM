@@ -1,1 +1,6 @@
-__all__ = ["management", "server", "wrappers"]
+
+all = [
+    "operations",
+    "server",
+    "wrappers"
+]

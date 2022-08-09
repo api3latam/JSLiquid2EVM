@@ -12,8 +12,9 @@ import logging
 from typing import Optional
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
-from liquid.wrappers import cli_exec
-from utils.misc import Config, get_configs
+from .wrappers import cli_exec
+from ..utils.misc import Config, get_configs, get_root_path
+from ..main import BACKEND_PATH
 
 DEFAULT_LOCATION = f"{os.environ['HOME']}/.elements"
 
@@ -166,8 +167,10 @@ class Service():
                 `localhost`\n')
         else:
             if not auth_dict:
-                auth_dict = get_configs(
-                    keys=['rpc_port', 'rpc_user', 'rpc_password'])
+                env_path = f"{get_root_path(BACKEND_PATH)}/.env"
+                auth_dict = get_configs(env_path,
+                                        keys=['rpc_port', 'rpc_user',
+                                              'rpc_password'])
             _cred = f"{auth_dict['rpc_user']}:{auth_dict['rpc_password']}"
             host = f"http://{_cred}@127.0.0.1:{auth_dict['rpc_port']}"
         asp = AuthServiceProxy(host)

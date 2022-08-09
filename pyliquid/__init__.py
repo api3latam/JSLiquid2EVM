@@ -1,0 +1,5 @@
+all = [
+    "main",
+    "callbacks",
+    "models"
+]
