@@ -3,6 +3,7 @@ Set of endpoints for operations with Liquid.
 """
 
 import json
+from typing import Optional
 from fastapi import APIRouter, HTTPException, status
 
 from .share import RESPONSES
@@ -12,45 +13,57 @@ from pyliquid.models import requests, responses
 
 router = APIRouter(
     prefix="/operations",
-    responses={RESPONSES}
+    responses=RESPONSES
 )
+
+def get_wallet_instance(wallet_mode: str, 
+                        target_label: Optional[str] = None) -> Wallet:
+    """
+    Return wallet instance depending on specified mode.
+    """
+    _proxy = Service.get_proxy()
+    if target_label:
+        return Wallet(_proxy, wallet_mode, target_label)
+    else:
+        return Wallet(_proxy, wallet_mode)
 
 @router.get("/wallet", tags=["wallet"])
 async def get_wallet():
     """
     List active wallets on the node.
+
+    TODO: This should only be callable by admin.
     """
     try:
-        _proxy = Service.get_proxy()
-        _wallet = Wallet(_proxy, True)
-        output = _wallet.list_wallets()
+        _instance = get_wallet_instance('r')
+        output = _instance.list_wallets()
         return responses.SuccessGet(status.HTTP_200_OK, 
             json.dumps(output))
     except Exception:
         raise HTTPException(500)
 
-
-async def get_labeled_wallet(requested_label: str):
+@router.get("/wallet/", tags=["wallet"])
+async def get_labeled_wallet(wallet_label: str):
     """
     Returns an specific wallet metadata.
     """
-    session_wallets = get_session_wallets()
-    if not session_wallets:
-        raise RuntimeError('No wallet instance have been loaded. Please load\
-            a wallet beforehand.')
-    else:
-        target_wallet = [w for w in session_wallets
-                         if w.wallet['label'] == requested_label]
-        if target_wallet:
-            _wallet = target_wallet[-1]
-            return _wallet.wallet
-        else:
-            raise TypeError('The requested address has not been loaded.')
+    try:
+        _instance = get_wallet_instance('l', wallet_label)
+        return responses.SuccessGet(status.HTTP_200_OK,
+            json.dumps(_instance.get_wallet_info()))
+    except Exception:
+        raise HTTPException(500)
 
-
+@router.post("/wallet/create", tags=["wallet"])
 async def post_create_wallet():
     """
     Creates a new Wallet instance
+
+    TODO: Only callable by admin.
     """
-    out = Wallet()
-    return out
+    try:
+        _instance = get_wallet_instance('c')
+        return responses.SuccessGet(status.HTTP_200_OK,
+            json.dumps(_instance.get_wallet_info()))
+    except Exception:
+        raise HTTPException(500)

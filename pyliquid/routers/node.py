@@ -14,17 +14,10 @@ router = APIRouter(
     responses=RESPONSES
 )
 
-@router.post("/start")
-async def get_node_status():
+@router.post("/restart")
+def restart_node():
     """
-    Get the status of `elementsd` daemon.
-    """
-    return Service._is_running()
-
-
-def start_node():
-    """
-    Start a running instance of Liquid network.
+    Restart the running instance of Liquid node.
     """
     _ = Service()
-    return 'Service sucessfully created'
+    return responses.SuccessPost(status.HTTP_201_CREATED)

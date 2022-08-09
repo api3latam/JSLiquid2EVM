@@ -18,14 +18,14 @@ class Wallet():
     _proxy: AuthServiceProxy
         Authenticated Proxy Service to be used by the classmethods.
     _wallet: Dict
-        Resulting metadata of created wallet at the network level.
+        Resulting metadata of the wallet at the node level.
     """
 
     _proxy: AuthServiceProxy
     _wallet: dict
 
     def __init__(self, proxy_service: AuthServiceProxy,
-                 read_mode: bool,
+                 mode: Optional[str] = 'r',
                  wallet_label: Optional[str] = None,
                  with_address: bool = True) -> None:
         """
@@ -39,9 +39,15 @@ class Wallet():
             If your wallet should have at least one address.
         """
         self._proxy = proxy_service
-        if not read_mode:
+        if mode == 'c':
             self._wallet = self._create_wallet(label=wallet_label,
                                                address=with_address)
+        elif mode == 'r':
+            self._wallet = {}
+        elif mode == 'l':
+            self._wallet = self.load_wallet(wallet_label)
+        else:
+            raise NotImplementedError("Provide a valid Wallet mode!")
 
     @property
     def proxy(self) -> AuthServiceProxy:
@@ -81,7 +87,8 @@ class Wallet():
         else:
             return _inst_func()
 
-    def _create_wallet(self, label: str, address: bool) -> dict:
+    def _create_wallet(self, address: bool, 
+                       label: Optional[str] = None) -> dict:
         """
         Create a wallet from a random name.
 
@@ -129,14 +136,14 @@ class Wallet():
 
     def list_wallets(self) -> list:
         """
-        Get all saved wallets at network directory.
+        Get all saved wallets at node directory.
 
         Returns
         -------
         dict
             Dictionary with a lists of wallets.
         """
-        return self._wrapper_executor(self.proxy.listwallets)
+        return self._wrapper_executor(self.proxy.listwalletdir)
 
     def load_wallet(self, label: str) -> dict:
         """
@@ -150,7 +157,7 @@ class Wallet():
         Returns
         -------
         dict
-            Dictionary with a lists of wallets
+            Dictionary with the wallet details
         """
         return self._wrapper_executor(self.proxy.loadwallet, label)
 
