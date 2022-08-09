@@ -25,6 +25,7 @@ class Wallet():
     _wallet: dict
 
     def __init__(self, proxy_service: AuthServiceProxy,
+                 read_mode: bool,
                  wallet_label: Optional[str] = None,
                  with_address: bool = True) -> None:
         """
@@ -38,8 +39,9 @@ class Wallet():
             If your wallet should have at least one address.
         """
         self._proxy = proxy_service
-        self._wallet = self._create_wallet(label=wallet_label,
-                                           address=with_address)
+        if not read_mode:
+            self._wallet = self._create_wallet(label=wallet_label,
+                                               address=with_address)
 
     @property
     def proxy(self) -> AuthServiceProxy:

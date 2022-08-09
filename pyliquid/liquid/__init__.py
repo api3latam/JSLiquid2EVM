@@ -1,7 +1,6 @@
 
 all = [
-    "internals",
-    "management",
+    "operations",
     "server",
     "wrappers"
 ]

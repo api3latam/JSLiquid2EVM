@@ -1,5 +1,5 @@
 """
-Defines prototype for incoming data, and validators for fields prior to
+Defines models for incoming data, and validators for fields prior to
 execution.
 """
 

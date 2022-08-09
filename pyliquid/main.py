@@ -2,7 +2,8 @@ from pathlib import Path
 import logging
 from fastapi import FastAPI
 
-from pyliquid.liquid import internals, server
+from pyliquid.routers import health, node, operations
+from pyliquid.liquid import server
 from pyliquid.utils import misc
 
 PROJECT_PATH = "PyLiquid2EVM"
@@ -15,7 +16,7 @@ BACKEND_PATH = f"{_filter_path}/{PROJECT_PATH}"
 
 app = FastAPI()
 
-app.include_router(internals.router)
+app.include_router(health.router, operations.router, node.router)
 
 
 @app.on_event('startup')
@@ -37,4 +38,4 @@ async def root() -> dict[str]:
     -------
     dict[str]
     """
-    return {"message": "This is a Liquid API from API Latam."}
+    return {"message": "This is a Liquid Service build by API Latam."}
