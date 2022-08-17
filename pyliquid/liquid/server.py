@@ -17,7 +17,7 @@ from ..utils.misc import Config, get_configs, get_root_path
 from ..main import BACKEND_PATH
 
 DEFAULT_LOCATION = f"{os.environ['HOME']}/.elements"
-
+NETWORK = ""
 
 class Service():
     """
@@ -83,6 +83,8 @@ class Service():
             logging.info(f"Initializating Chain in mode: \
                 {mode[0].split('=')[-1]}\nLocated at directory: \
                     {network_path}/{mode[0]}\n")
+            global NETWORK 
+            NETWORK = mode[0].split("=")[-1]
         except FileNotFoundError:
             logging.error("Verify that there's a `.conf` file at the specified\
                             path\n")

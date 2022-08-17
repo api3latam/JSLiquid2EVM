@@ -2,16 +2,15 @@ import json
 from typing import Optional
 import greenaddress as gdk
 
-# Set the network name to 'liquid' for the live Liquid network.
-NETWORK = "testnet-liquid"
+from ..liquid.server import NETWORK
 
 class gdk_wallet:
     """
-    Class method to create and return an instance of GDK Wallet.
+    Class method to manage and return an instance of GDK Wallet.
     """
+    
     @classmethod
-    def create_new_wallet(cls, enabled_2fa: bool, 
-                          mnemonic: Optional[str] = None):
+    def create_instance(cls, mnemonic: Optional[str] = None):
         """
         Create a new wallet with a Managed Assets account.
         You can pass in a mnemonic generated outside GDK if you want,or have
@@ -20,7 +19,9 @@ class gdk_wallet:
         """
         self = cls()
         self.mnemonic = mnemonic or gdk.generate_mnemonic()
-        self.session = gdk.Session({'name': self.NETWORK_NAME})
+        self.session = gdk.Session({'name': self.NETWORK_NAME, 
+                                    "proxy": "http://127.0.0.1:8080",
+                                    "use_tor": False})
 
         credentials = {'mnemonic': self.mnemonic}
         self.session.register_user({}, credentials).resolve()
@@ -54,6 +55,9 @@ class gdk_wallet:
 
     """Do not use this to instantiate the object, use create_new_wallet or login_with_*"""
     def __init__(self):
+        """
+        """
+        global NETWORK
         self.NETWORK_NAME = NETWORK
 
         # 2of2_no_recovery is the account type used by Blockstream AMP.
