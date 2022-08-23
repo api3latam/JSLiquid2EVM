@@ -6,30 +6,29 @@ from typing import Optional, Callable
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
-from .wrappers import cli_exec, rpc_exec
+from .wrappers import rpc_exec
 
 
 class Wallet():
     """
     Object representation for a unique wallet on the node.
-
     Attributes
     --------
     _proxy: AuthServiceProxy
         Authenticated Proxy Service to be used by the classmethods.
     _wallet: Dict
-        Resulting metadata of created wallet at the network level.
+        Resulting metadata of the wallet at the node level.
     """
 
     _proxy: AuthServiceProxy
     _wallet: dict
 
     def __init__(self, proxy_service: AuthServiceProxy,
+                 mode: Optional[str] = 'r',
                  wallet_label: Optional[str] = None,
                  with_address: bool = True) -> None:
         """
         Constructor for Wallet class.
-
         Parameters
         ---------
         proxy: AuthServiceProxy
@@ -38,8 +37,15 @@ class Wallet():
             If your wallet should have at least one address.
         """
         self._proxy = proxy_service
-        self._wallet = self._create_wallet(label=wallet_label,
-                                           address=with_address)
+        if mode == 'c':
+            self._wallet = self._create_wallet(label=wallet_label,
+                                               address=with_address)
+        elif mode == 'r':
+            self._wallet = {}
+        elif mode == 'l':
+            self._wallet = self.load_wallet(wallet_label)
+        else:
+            raise NotImplementedError("Provide a valid Wallet mode!")
 
     @property
     def proxy(self) -> AuthServiceProxy:
@@ -60,14 +66,12 @@ class Wallet():
     def _wrapper_executor(cls, _inst_func: Callable, *args):
         """
         Executor for wrapper functions to work withing instance methods.
-
         Parameters
         ---------
         _inst_func: Callable
             Instance function to be used.
         *args:
             Set of parameters to be passed down to the function.
-
         Returns
         -------
         dict
@@ -79,17 +83,16 @@ class Wallet():
         else:
             return _inst_func()
 
-    def _create_wallet(self, label: str, address: bool) -> dict:
+    def _create_wallet(self, address: bool, 
+                       label: Optional[str] = None) -> dict:
         """
         Create a wallet from a random name.
-
         Parameters
         ----------
         label: str
             Name for the wallet
         address: bool
             Either to create or not an address for this wallet.
-
         Returns
         ------
         dict
@@ -109,14 +112,12 @@ class Wallet():
                            language: Optional[str] = "english") -> str:
         """
         Generate a mnemonic for wallet creation.
-
         Parameters
         ----------
         strength: int, default = 256
             The length for the resulting phrase to be generated.
         language: str, default = "english"
             The language of the dictionary to be used.
-
         Returns
         -------
         str
@@ -127,178 +128,152 @@ class Wallet():
 
     def list_wallets(self) -> list:
         """
-        Get all saved wallets at network directory.
-
+        Get all saved wallets at node directory.
         Returns
         -------
         dict
             Dictionary with a lists of wallets.
         """
-        return self._wrapper_executor(self.proxy.listwallets)
+        return self._wrapper_executor(self.proxy.listwalletdir)
 
-    # TODO: Test this approach
-    @rpc_exec
     def load_wallet(self, label: str) -> dict:
         """
         Load a wallet with a given label.
-
         Parameters
         ----------
         label: str
             Label of the wallet to be loaded.
-
         Returns
         -------
         dict
-            Dictionary with a lists of wallets 
+            Dictionary with the wallet details
         """
-        return self.proxy.loadwallet(label)
+        return self._wrapper_executor(self.proxy.loadwallet, label)
 
-    # TODO: Test this approach
-    @rpc_exec
     def get_balance(self) -> dict:
         """
         Get the balance of the current wallet.
-
         Returns
         -------
         dict
-            Dictionary with a lists of wallets 
+            Dictionary with a lists of wallets
         """
-        return self.proxy.getbalance()
+        return self._wrapper_executor(self.proxy.getbalance)
 
-    @rpc_exec
     def get_address(self) -> str:
         """
         Get the current address of the wallet.
-
         Returns
         -------
         str
             Current address of the wallet.
         """
-        return self.proxy.getaddress()
+        return self._wrapper_executor(self.proxy.getaddress)
 
-    @rpc_exec
     def get_private_key(self) -> str:
         """
         Get the current private key of the wallet.
-
         Returns
         -------
         str
             Current private key of the wallet.
         """
-        return self.proxy.dumpprivkey()
+        return self._wrapper_executor(self.proxy.dumpprivkey)
 
-    @rpc_exec
     def get_public_key(self) -> str:
         """
         Get the current public key of the wallet.
-
         Returns
         -------
         str
             Current public key of the wallet.
         """
-        return self.proxy.getpubkey()
+        return self._wrapper_executor(self.proxy.getpubkey)
 
-    @rpc_exec
     def get_wallet_info(self) -> dict:
         """
         Get the current wallet information.
-
         Returns
         -------
         dict
             Current wallet information.
         """
-        return self.proxy.getwalletinfo()
+        return self._wrapper_executor(self.proxy.getwalletinfo)
 
-    @rpc_exec
     def send_to_address(self, address: str, amount: float) -> str:
         """
         Send a transaction to a given address.
-
         Parameters
         ---------
         address: str
             Address to send the transaction to.
         amount: float
             Amount to send.
-
         Returns
         -------
         str
             Transaction ID.
         """
-        return self.proxy.sendtoaddress(address, amount)
+        return self._wrapper_executor(self.proxy.sendtoaddress, 
+            address, amount)
 
-    @rpc_exec
     def send_to_many(self, addresses: dict) -> str:
         """
         Send a transaction to multiple addresses.
-
         Parameters
         ---------
         addresses: dict
             Dictionary with addresses and amounts to send.
-
         Returns
         -------
         str
             Transaction ID.
         """
-        return self.proxy.sendmany("", addresses)
+        return self._wrapper_executor(self.proxy.sendmany, "", addresses)
 
-    @rpc_exec
     def send_from_address(self, address: str, amount: float) -> str:
         """
         Send a transaction from a given address.
-
         Parameters
         ---------
         address: str
             Address to send the transaction from.
         amount: float
             Amount to send.
-
         Returns
         -------
         str
             Transaction ID.
         """
-        return self.proxy.sendfrom(address, address, amount)
+        return self._wrapper_executor(self.proxy.sendfrom, 
+                                      address, address, amount)
 
-    @rpc_exec
     def issue_asset(self, name: str, quantity: int,
                     description: str, divisible: bool) -> str:
         """
         Issue an asset to the network.
-
         Parameters
         ---------
         name: str
-              Name of the asset.
+            Name of the asset.
         quantity: int
-              Quantity of the asset.
+            Quantity of the asset.
         description: str
-              Description of the asset.
+            Description of the asset.
         divisible: bool
-              If the asset is divisible.
-
+            If the asset is divisible.
         Returns
         -------
         str
               Transaction ID.
         """
-        return self.proxy.issue(name, quantity, description, divisible)
+        return self._wrapper_executor(self.proxy.issue, name, 
+                                      quantity, description, divisible)
 
 
 class Pool:
     """
     Object representing a unique pool of a token class.
-
     Attributes
     ----------
     _vault_wallet: Wallet
@@ -310,7 +285,6 @@ class Pool:
     def __init__(self, input_wallet: Wallet):
         """
         Constructor for Pool class.
-
         Parameters
         ----------
         input_wallet: Wallet
@@ -329,7 +303,6 @@ class Pool:
                     description: str, divisible: bool) -> str:
         """
         Issue a token to the pool.
-
         Parameters
         ----------
         name: str
@@ -340,29 +313,28 @@ class Pool:
             Description of the token.
         divisible: bool
             If the token is divisible.
-
         Returns
         -------
         str
             Transaction ID.
         """
-        return self._vault_wallet.issue_asset(name, quantity, description, 
-                                              divisible)
+        return self._vault_wallet._wrapper_executor(
+            self._vault_wallet.proxy.issue_asset, name, quantity, description,
+            divisible)
 
     def burn_token(self, name: str, quantity: int) -> str:
         """
         Burn a token from the pool.
-
         Parameters
         ----------
         name: str
             Name of the token.
         quantity: int
             Quantity of the token.
-
         Returns
         -------
         str
             Transaction ID.
         """
-        return self._vault_wallet.burn_asset(name, quantity)
+        return self._vault_wallet._wrapper_executor(
+            self._vault_wallet.proxy.burn_asset, name, quantity)

@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import Optional, Type
+from typing import Optional
 
 from .server import DEFAULT_LOCATION, Service
-from .management import Wallet, Pool
+from .management import Wallet
 from ..state import get_active_service, update_active_service, \
     get_session_wallets
 
