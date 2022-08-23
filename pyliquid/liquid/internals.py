@@ -46,7 +46,7 @@ async def get_wallet():
         _wallet = session_wallets[-1]
     else:
         _proxy = _check_for_proxy()
-        _wallet = Wallet(_proxy, with_address=False)
+        _wallet = Wallet(_proxy)
     _wallet.list_wallets()
 
 
@@ -74,7 +74,8 @@ async def post_create_wallet():
     """
     Creates a new Wallet instance
     """
-    out = Wallet()
+    _proxy = _check_for_proxy()
+    out = Wallet(_proxy, mode='c', with_address=False)
     return out
 
 
@@ -83,7 +84,10 @@ async def get_node_status():
     """
     Get the status of `elementsd` daemon.
     """
-    return Service._is_running()
+    if Service._is_running():
+        return {"description": "Running and Healthy"}
+    else:
+        return {"description": "Node is not running"}
 
 
 @router.post('/node/start', tags=['node'])
@@ -92,4 +96,4 @@ def start_node(body: ServiceParams):
     Start a running instance of Liquid network.
     """
     _ = Service(**body)
-    return 'Service sucessfully created'
+    return {"description": "Service sucessfully created"}
