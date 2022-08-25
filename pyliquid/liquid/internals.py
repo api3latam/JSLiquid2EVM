@@ -1,11 +1,10 @@
-from fastapi import APIRouter
+import json
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 
 from .server import DEFAULT_LOCATION, Service
 from .management import Wallet
-from ..state import get_active_service, update_active_service, \
-    get_session_wallets
 
 router = APIRouter(prefix="/internal", tags=['management'],
                    responses={403: {"description": "Operation forbidden"},
@@ -17,23 +16,16 @@ class ServiceParams(BaseModel):
     working_dir: Optional[str] = DEFAULT_LOCATION
 
 
-def _check_for_proxy():
+def get_wallet_instance(wallet_mode: str, 
+                        target_label: Optional[str] = None) -> Wallet:
     """
-    Check if there's any Service instance running to get its proxy.
-
-    Returns
-    -------
-    AuthServiceProxy
-        Latest Proxy Service instance.
+    Return wallet instance depending on specified mode.
     """
-    _temp = get_active_service()
-    if _temp:
-        return list(_temp.values())[-1]
+    _proxy = Service.get_proxy()
+    if target_label:
+        return Wallet(_proxy, wallet_mode, target_label)
     else:
-        _service = Service()
-        _proxy = _service.get_proxy()
-        update_active_service({_service: _proxy})
-        _check_for_proxy()
+        return Wallet(_proxy, wallet_mode)
 
 
 @router.get('/wallet', tags=['wallet'])
@@ -41,42 +33,33 @@ async def get_wallet():
     """
     List active wallets on the node.
     """
-    session_wallets = get_session_wallets()
-    if session_wallets:
-        _wallet = session_wallets[-1]
-    else:
-        _proxy = _check_for_proxy()
-        _wallet = Wallet(_proxy)
-    _wallet.list_wallets()
+    _wallet = get_wallet_instance("r")
+    return _wallet.list_wallets()
 
 
 @router.get('/wallet/{requested_label}', tags=['wallet'])
-async def get_labeled_wallet(requested_label: str):
+async def get_labeled_wallet(wallet_label: str):
     """
     Returns an specific wallet metadata.
     """
-    session_wallets = get_session_wallets()
-    if not session_wallets:
-        raise RuntimeError('No wallet instance have been loaded. Please load\
-            a wallet beforehand.')
-    else:
-        target_wallet = [w for w in session_wallets
-                         if w.wallet['label'] == requested_label]
-        if target_wallet:
-            _wallet = target_wallet[-1]
-            return _wallet.wallet
-        else:
-            raise TypeError('The requested address has not been loaded.')
+    try:
+        _instance = get_wallet_instance('l', wallet_label)
+        return json.dumps(_instance.get_wallet_info())
+    except Exception:
+        raise HTTPException(500)
 
 
 @router.post('/wallet/create', tags=['wallet'])
 async def post_create_wallet():
     """
     Creates a new Wallet instance
+    TODO: Only callable by admin.
     """
-    _proxy = _check_for_proxy()
-    out = Wallet(_proxy, mode='c', with_address=False)
-    return out
+    try:
+        _instance = get_wallet_instance('c')
+        return json.dumps(_instance.get_wallet_info())
+    except Exception:
+        raise HTTPException(500)
 
 
 @router.get('/node/status', tags=['node'])
@@ -95,5 +78,5 @@ def start_node(body: ServiceParams):
     """
     Start a running instance of Liquid network.
     """
-    _ = Service(**body)
+    _ = Service(new_node=body.new_node, working_dir=body.working_dir)
     return {"description": "Service sucessfully created"}
