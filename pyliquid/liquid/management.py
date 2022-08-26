@@ -2,6 +2,7 @@
 Core components that represent objects inside Liquid node like a Wallet.
 """
 from uuid import uuid4
+import logging
 from typing import Optional, Callable
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
@@ -26,7 +27,7 @@ class Wallet():
     def __init__(self, proxy_service: AuthServiceProxy,
                  mode: Optional[str] = 'r',
                  wallet_label: Optional[str] = None,
-                 with_address: bool = True) -> None:
+                 with_address: bool = False) -> None:
         """
         Constructor for Wallet class.
         Parameters
@@ -189,16 +190,6 @@ class Wallet():
             Current public key of the wallet.
         """
         return self._wrapper_executor(self.proxy.getpubkey)
-
-    def get_wallet_info(self) -> dict:
-        """
-        Get the current wallet information.
-        Returns
-        -------
-        dict
-            Current wallet information.
-        """
-        return self._wrapper_executor(self.proxy.getwalletinfo)
 
     def send_to_address(self, address: str, amount: float) -> str:
         """

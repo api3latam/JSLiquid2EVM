@@ -37,18 +37,6 @@ async def get_wallet():
     return _wallet.list_wallets()
 
 
-@router.get('/wallet/{requested_label}', tags=['wallet'])
-async def get_labeled_wallet(wallet_label: str):
-    """
-    Returns an specific wallet metadata.
-    """
-    try:
-        _instance = get_wallet_instance('l', wallet_label)
-        return json.dumps(_instance.get_wallet_info())
-    except Exception:
-        raise HTTPException(500)
-
-
 @router.post('/wallet/create', tags=['wallet'])
 async def post_create_wallet():
     """
@@ -57,7 +45,7 @@ async def post_create_wallet():
     """
     try:
         _instance = get_wallet_instance('c')
-        return json.dumps(_instance.get_wallet_info())
+        return _instance.wallet
     except Exception:
         raise HTTPException(500)
 
