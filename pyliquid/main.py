@@ -1,10 +1,10 @@
 from pathlib import Path
 import logging
 from fastapi import FastAPI
+from dotenv import load_dotenv  # type: ignore
 
 from pyliquid.routers import health, node, operations
 from pyliquid.liquid import server
-from pyliquid.utils import misc
 
 PROJECT_PATH = "PyLiquid2EVM"
 
@@ -27,7 +27,7 @@ async def startup_event():
     Startup script to be executed when API is initialized.
     """
     logging.basicConfig(level=logging.INFO)
-    misc.set_working_path(BACKEND_PATH)
+    load_dotenv(f"{BACKEND_PATH}/.env")
     server.Service()
 
 

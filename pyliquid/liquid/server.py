@@ -13,8 +13,7 @@ from typing import Optional
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from pyliquid.liquid.wrappers import cli_exec
-from pyliquid.utils.misc import Config, get_configs, get_root_path
-from pyliquid.main import BACKEND_PATH
+from pyliquid.utils.misc import get_configs
 
 DEFAULT_LOCATION = f"{os.environ['HOME']}/.elements"
 
@@ -141,7 +140,7 @@ class Service():
 
     @staticmethod
     def get_proxy(host: Optional[str] = 'localhost',
-                  auth_dict: Optional[Config] = None) -> AuthServiceProxy:
+                  auth_dict: Optional[dict] = None) -> AuthServiceProxy:
         """
         Return RPC Connection instance with active node
 
@@ -167,9 +166,7 @@ class Service():
                 `localhost`\n')
         else:
             if not auth_dict:
-                env_path = f"{get_root_path(BACKEND_PATH)}/.env"
-                auth_dict = get_configs(env_path,
-                                        keys=['rpc_port', 'rpc_user',
+                auth_dict = get_configs(['rpc_port', 'rpc_user',
                                               'rpc_password'])
             _cred = f"{auth_dict['rpc_user']}:{auth_dict['rpc_password']}"
             host = f"http://{_cred}@127.0.0.1:{auth_dict['rpc_port']}"
