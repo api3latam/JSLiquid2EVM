@@ -1,7 +1,6 @@
+__all__ = ["health", "node", "operations", "share"]
 
-__all__ = [
-    "health",
-    "operations",
-    "server",
-    "share"
-]
+from .health import *
+from .node import *
+from .operations import *
+from .share import *

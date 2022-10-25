@@ -4,7 +4,7 @@ Set of endpoints for healtchecks.
 
 from fastapi import APIRouter, HTTPException, status
 
-from .share import RESPONSES
+from pyliquid.routers.share import RESPONSES
 from pyliquid.liquid.server import Service
 from pyliquid.models.responses import SuccessGet
 

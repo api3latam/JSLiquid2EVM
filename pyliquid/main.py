@@ -16,7 +16,9 @@ BACKEND_PATH = f"{_filter_path}/{PROJECT_PATH}"
 
 app = FastAPI()
 
-app.include_router(health.router, operations.router, node.router)
+app.include_router(health.router)
+app.include_router(operations.router)
+app.include_router(node.router)
 
 
 @app.on_event('startup')

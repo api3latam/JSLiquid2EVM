@@ -6,7 +6,7 @@ from typing import Optional, Callable
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
-from .wrappers import rpc_exec
+from pyliquid.liquid.wrappers import rpc_exec
 
 
 class Wallet():

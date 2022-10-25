@@ -12,9 +12,9 @@ import logging
 from typing import Optional
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
-from .wrappers import cli_exec
-from ..utils.misc import Config, get_configs, get_root_path
-from ..main import BACKEND_PATH
+from pyliquid.liquid.wrappers import cli_exec
+from pyliquid.utils.misc import Config, get_configs, get_root_path
+from pyliquid.main import BACKEND_PATH
 
 DEFAULT_LOCATION = f"{os.environ['HOME']}/.elements"
 

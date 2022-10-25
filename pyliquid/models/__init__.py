@@ -1,5 +1,4 @@
+__all__ = ["requests", "responses"]
 
-__all__ = [
-    "requests",
-    "responses"
-]
+from .requests import *
+from .responses import *

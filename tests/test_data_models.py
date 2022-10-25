@@ -2,7 +2,7 @@
 Suite of tests for data models for incoming data.
 """
 
-from src.mqtt import models
+from pyliquid import models
 
 def test_instructions():
     """
