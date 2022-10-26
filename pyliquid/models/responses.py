@@ -2,8 +2,9 @@
 Defines models for server responses.
 """
 
-from typing import Optional
-
+# General imports
+from typing import Optional, Union
+import json
 from pydantic import BaseModel
 
 class SuccessGet(BaseModel):
@@ -11,11 +12,12 @@ class SuccessGet(BaseModel):
     Model for successful `get` requests.
     """
     status: int
-    payload: Optional[str] = None
+    payload: Optional[str] = json.dumps({"description": "Successful request!"})
 
 class SuccessPost(BaseModel):
     """
     Model for successful `post` requests
     """
     status: int
-    params: dict = {"description": "Fulfilled request!"}
+    payload: Optional[Union[str, dict]] = json.dumps(
+                                        {"description": "Request fulfilled!"})
