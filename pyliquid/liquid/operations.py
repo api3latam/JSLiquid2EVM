@@ -2,7 +2,7 @@
 Core components that represent objects inside Liquid node like a Wallet.
 """
 from uuid import uuid4
-from typing import Optional, Callable
+from typing import Optional, Callable, Union
 
 from bitcoinrpc.authproxy import AuthServiceProxy  # type: ignore
 from mnemonic import Mnemonic  # type: ignore
@@ -262,52 +262,28 @@ class Pool:
         self._vault_wallet = input_wallet
 
     @property
-    def vaul_wallet(self):
+    def vaul_wallet(self) -> Wallet:
         """
         Getter method for `vault_wallet` attribute.
         """
         return self._vault_wallet
 
-    def issue_token(self, name: str, quantity: int,
-                    description: str, divisible: bool) -> str:
+    def issue_token(self, amount: Union[str, float], 
+                    reissue: Union[str, float]) -> dict:
         """
-        Issue a token to the pool.
+        Issue a token from the pool wallet.
 
         Parameters
         ----------
-        name: str
-            Name of the token.
-        quantity: int
-            Quantity of the token.
-        description: str
-            Description of the token.
-        divisible: bool
-            If the token is divisible.
+        amount: Union[str, float]
+            Initial amount of tokens to be available.
+        reissue: Union[str, float]
+            Amount of reissuance tokens to generate.
 
         Returns
         -------
-        str
-            Transaction ID.
+        dict
+            Token metadata result.
         """
         return self._vault_wallet._wrapper_executor(
-            self._vault_wallet.proxy.issueasset, quantity, description,
-            divisible)
-
-    def burn_token(self, name: str, quantity: int) -> str:
-        """
-        Burn a token from the pool.
-
-        Parameters
-        ----------
-        name: str
-            Name of the token.
-        quantity: int
-            Quantity of the token.
-
-        Returns
-        -------
-        str
-            Transaction ID.
-        """
-        return self._vault_wallet._wrapper_executor(
-            self._vault_wallet.proxy.destroyamount, name, quantity)
+            self._vault_wallet.proxy.issueasset, amount, reissue)
