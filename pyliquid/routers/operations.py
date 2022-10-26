@@ -3,6 +3,7 @@ Set of endpoints for operations with Liquid.
 """
 
 import json
+import logging
 from typing import Optional
 from fastapi import APIRouter, HTTPException, status
 
@@ -37,9 +38,11 @@ async def get_wallet():
     try:
         _instance = get_wallet_instance('r')
         output = _instance.list_wallets()
-        return responses.SuccessGet(status.HTTP_200_OK, 
-            json.dumps(output))
-    except Exception:
+        print(f"The output is: {output}\n")
+        return responses.SuccessGet(status=status.HTTP_200_OK, 
+                                    payload=json.dumps(output))
+    except Exception as exp:
+        logging.error(exp)
         raise HTTPException(500)
 
 @router.get("/wallet/", tags=["wallet"])
@@ -49,9 +52,10 @@ async def get_labeled_wallet(wallet_label: str):
     """
     try:
         _instance = get_wallet_instance('l', wallet_label)
-        return responses.SuccessGet(status.HTTP_200_OK,
-            json.dumps(_instance.get_wallet_info()))
-    except Exception:
+        return responses.SuccessGet(status=status.HTTP_200_OK,
+                        payload=json.dumps(_instance.get_wallet_info()))
+    except Exception as exp:
+        logging.error(exp)
         raise HTTPException(500)
 
 @router.post("/wallet/create", tags=["wallet"])
@@ -63,7 +67,8 @@ async def post_create_wallet():
     """
     try:
         _instance = get_wallet_instance('c')
-        return responses.SuccessGet(status.HTTP_200_OK,
-            json.dumps(_instance.get_wallet_info()))
-    except Exception:
+        return responses.SuccessPost(status=status.HTTP_200_OK,
+                        payload=json.dumps(_instance.get_wallet_info()))
+    except Exception as exp:
+        logging.error(exp)
         raise HTTPException(500)
