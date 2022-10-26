@@ -1,5 +1,6 @@
 attrs==22.1.0
 autopep8==1.6.0
+exceptiongroup==1.0.0rc9
 flake8==4.0.1
 iniconfig==1.1.1
 mccabe==0.6.1
@@ -11,6 +12,7 @@ py==1.11.0
 pycodestyle==2.8.0
 pyflakes==2.4.0
 pyparsing==3.0.9
+pytest==7.2.0
 toml==0.10.2
 tomli==2.0.1
 typing_extensions==4.2.0
