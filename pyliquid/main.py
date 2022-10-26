@@ -1,5 +1,6 @@
 from pathlib import Path
 import logging
+from typing import Dict
 from fastapi import FastAPI
 from dotenv import load_dotenv  # type: ignore
 
@@ -32,12 +33,12 @@ async def startup_event():
 
 
 @app.get('/')
-async def root() -> dict[str]:
+async def root() -> Dict[str, str]:
     """
     Root route of API functions. Just returns a message.
 
     Returns
     -------
-    dict[str]
+    dict[str, str]
     """
     return {"message": "This is a Liquid Service build by API Latam."}

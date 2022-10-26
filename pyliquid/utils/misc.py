@@ -1,8 +1,8 @@
 import os
-from typing import Union
+from typing import Union, List, Dict
 
-def get_configs(keys: Union[list[str], str]) \
-    -> Union[str, dict[str, str]]:
+def get_configs(keys: Union[List[str], str]) \
+    -> Union[str, Dict[str, str]]:
     """
     Load dictionary of environment variables.
 

@@ -4,13 +4,13 @@ execution.
 """
 
 from datetime import datetime
-from typing import Tuple
+from typing import Tuple, List, Optional
 from pydantic import BaseModel, Field, validator
 
 from pyliquid.utils.data import check_sorted_index_tuple
 
 
-def check_matching_list_sequences(list_field: list[tuple], len_field: int) \
+def check_matching_list_sequences(list_field: List[Tuple], len_field: int) \
                                 -> None:
     """
     Helper function for Instructions validators. Checks wether the length
@@ -47,8 +47,8 @@ class Instructions(BaseModel):
     """
 
     seq: int
-    cmd: list[Tuple[int, str]]
-    arg: list[Tuple[int, str | None]] | None = None
+    cmd: List[Tuple[int, str]]
+    arg: Optional[Optional[List[Tuple[int, str]]]] = None
 
     @validator('seq', pre=True, always=True)
     def seq_higher_than_zero(cls, v):

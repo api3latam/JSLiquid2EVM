@@ -3,11 +3,11 @@ Utilities for data manipulation and validation
 """
 
 import logging
-from typing import Optional
+from typing import Optional, List, Tuple
 from decimal import Decimal
 
 
-def check_sorted_index_tuple(input_list: list[tuple]) -> Optional[bool]:
+def check_sorted_index_tuple(input_list: List[Tuple]) -> Optional[bool]:
     """
     Verify if the input list is already sorted based on sub-indexes from
     tuple.
