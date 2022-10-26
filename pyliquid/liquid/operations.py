@@ -145,9 +145,9 @@ class Wallet():
         """
         return self._wrapper_executor(self.proxy.listwalletdir)
 
-    def load_wallet(self, label: str) -> dict:
+    def load_wallet(self, name: str) -> dict:
         """
-        Load a wallet with a given label.
+        Load a wallet with a given filename.
 
         Parameters
         ----------
@@ -159,7 +159,7 @@ class Wallet():
         dict
             Dictionary with the wallet details
         """
-        return self._wrapper_executor(self.proxy.loadwallet, label)
+        return self._wrapper_executor(self.proxy.loadwallet, name)
 
     def get_balance(self) -> dict:
         """
@@ -235,65 +235,6 @@ class Wallet():
         return self._wrapper_executor(self.proxy.sendtoaddress, 
             address, amount)
 
-    def send_to_many(self, addresses: dict) -> str:
-        """
-        Send a transaction to multiple addresses.
-
-        Parameters
-        ---------
-        addresses: dict
-            Dictionary with addresses and amounts to send.
-
-        Returns
-        -------
-        str
-            Transaction ID.
-        """
-        return self._wrapper_executor(self.proxy.sendmany, "", addresses)
-
-    def send_from_address(self, address: str, amount: float) -> str:
-        """
-        Send a transaction from a given address.
-
-        Parameters
-        ---------
-        address: str
-            Address to send the transaction from.
-        amount: float
-            Amount to send.
-
-        Returns
-        -------
-        str
-            Transaction ID.
-        """
-        return self._wrapper_executor(self.proxy.sendfrom, 
-                                      address, address, amount)
-
-    def issue_asset(self, name: str, quantity: int,
-                    description: str, divisible: bool) -> str:
-        """
-        Issue an asset to the network.
-
-        Parameters
-        ---------
-        name: str
-            Name of the asset.
-        quantity: int
-            Quantity of the asset.
-        description: str
-            Description of the asset.
-        divisible: bool
-            If the asset is divisible.
-
-        Returns
-        -------
-        str
-              Transaction ID.
-        """
-        return self._wrapper_executor(self.proxy.issue, name, 
-                                      quantity, description, divisible)
-
 
 class Pool:
     """
@@ -315,6 +256,8 @@ class Pool:
         ----------
         input_wallet: Wallet
             Wallet to own the Pool and safeguard the tokens.
+
+        TO DO: Verify wether the one Pool corresponds to just one wallet.
         """
         self._vault_wallet = input_wallet
 
@@ -347,7 +290,7 @@ class Pool:
             Transaction ID.
         """
         return self._vault_wallet._wrapper_executor(
-            self._vault_wallet.proxy.issue_asset, name, quantity, description,
+            self._vault_wallet.proxy.issueasset, quantity, description,
             divisible)
 
     def burn_token(self, name: str, quantity: int) -> str:
@@ -367,4 +310,4 @@ class Pool:
             Transaction ID.
         """
         return self._vault_wallet._wrapper_executor(
-            self._vault_wallet.proxy.burn_asset, name, quantity)
+            self._vault_wallet.proxy.destroyamount, name, quantity)
