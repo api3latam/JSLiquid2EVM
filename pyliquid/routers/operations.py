@@ -4,8 +4,9 @@ Set of endpoints for operations with Liquid.
 
 import json
 import logging
-from typing import Optional
+from typing import Optional, Union
 from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel
 
 from pyliquid.routers.share import RESPONSES
 from pyliquid.liquid.server import Service
@@ -17,6 +18,11 @@ router = APIRouter(
     prefix="/operations",
     responses=RESPONSES
 )
+
+class SendTx(BaseModel):
+    target_address: str
+    total_amount: Union[str, float]
+
 
 def get_wallet_instance(wallet_mode: str, 
                         target_label: Optional[str] = None) -> Wallet:
@@ -54,7 +60,8 @@ async def get_labeled_wallet(wallet_label: str):
     try:
         _instance = get_wallet_instance('l', wallet_label)
         return responses.SuccessGet(status=status.HTTP_200_OK,
-                        payload=json.dumps(_instance.get_wallet_info()))
+                        payload=json.dumps(parse_decimal_to_float(
+                                                _instance.get_wallet_info())))
     except Exception as exp:
         logging.error(exp)
         raise HTTPException(500)
@@ -75,3 +82,19 @@ async def post_create_wallet():
     except Exception as exp:
         logging.error(exp)
         raise HTTPException(500)
+
+@router.post("/tx/send", tags=["tx"])
+async def post_send_transaction(incoming_body: SendTx):
+    """
+    Send tokens from the node Wallet to given address.
+    """
+    try:
+        _instance = get_wallet_instance('r')
+        return responses.SuccessPost(status=status.HTTP_200_OK,
+                                payload=json.dumps(
+                                    _instance.send_to_address(
+                                        incoming_body.target_address, 
+                                        incoming_body.total_amount)))
+    except Exception as exp:
+        logging.error(exp)
+        raise HTTPException

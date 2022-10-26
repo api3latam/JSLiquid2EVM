@@ -219,6 +219,7 @@ class Wallet():
     def send_to_address(self, address: str, amount: float) -> str:
         """
         Send a transaction to a given address.
+        TODO: Validate the input address.
 
         Parameters
         ---------
