@@ -19,5 +19,4 @@ class SuccessPost(BaseModel):
     Model for successful `post` requests
     """
     status: int
-    payload: Optional[Union[str, dict]] = json.dumps(
-                                        {"description": "Request fulfilled!"})
+    payload: Optional[str] = json.dumps({"description": "Request fulfilled!"})

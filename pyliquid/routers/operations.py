@@ -10,7 +10,8 @@ from fastapi import APIRouter, HTTPException, status
 from pyliquid.routers.share import RESPONSES
 from pyliquid.liquid.server import Service
 from pyliquid.liquid.operations import Wallet
-from pyliquid.models import requests, responses
+from pyliquid.models import responses
+from pyliquid.utils.data import parse_decimal_to_float
 
 router = APIRouter(
     prefix="/operations",
@@ -68,7 +69,9 @@ async def post_create_wallet():
     try:
         _instance = get_wallet_instance('c')
         return responses.SuccessPost(status=status.HTTP_200_OK,
-                        payload=json.dumps(_instance.get_wallet_info()))
+                                payload=json.dumps(
+                                    parse_decimal_to_float(
+                                        _instance.get_wallet_info())))
     except Exception as exp:
         logging.error(exp)
         raise HTTPException(500)
